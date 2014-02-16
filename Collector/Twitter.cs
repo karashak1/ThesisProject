@@ -29,6 +29,8 @@ namespace Collector {
     public class TwitterInfo {
         public string ConsumerKey { get; set; }
         public string ConsumerSercert { get; set; }
+        public string AccessToken { get; set; }
+        public string AccessTokenSecret { get; set; }
         public string username { get; set; }
         public string password { get; set; }
     }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Collector;
 using System.Net.Http;
 using TweetSharp.Serialization;
+using TweetSharp;
 using Newtonsoft.Json;
 
 namespace NeuralNetwork {
@@ -19,13 +20,26 @@ namespace NeuralNetwork {
             }
             else
                 ini = args[0];
+            Console.WriteLine(ini);
             //var twit = new Twitter();
             //twit.getData();
             //while (twit.Data.Length <= 1) ;
             //Console.WriteLine(twit.Data+"\n");
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.NullValueHandling = NullValueHandling.Ignore;
             
-            var blah = JsonConvert.DeserializeObject<TwitterInfo>(ini);
+            //var blah = JsonConvert.DeserializeObject<TwitterInfo>(ini);
+            TwitterInfo blah;
+            using (StreamReader sr = new StreamReader(ini)) 
+            using (JsonTextReader jr = new JsonTextReader(sr)) {
+                blah = serializer.Deserialize<TwitterInfo>(jr);
+            }
             Console.WriteLine(blah.ConsumerKey);
+            var info = new TwitterClientInfo();
+            info.ConsumerKey = blah.ConsumerKey;
+            info.ConsumerSecret = blah.ConsumerSercert;
+            var client = new TwitterService(info);
             var news = new News();
             news.getNews();
             Console.ReadLine();
