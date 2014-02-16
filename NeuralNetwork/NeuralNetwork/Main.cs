@@ -40,6 +40,9 @@ namespace NeuralNetwork {
             info.ConsumerKey = blah.ConsumerKey;
             info.ConsumerSecret = blah.ConsumerSercert;
             var client = new TwitterService(info);
+
+            client.AuthenticateWith(blah.AccessToken, blah.AccessTokenSecret);
+            client.SendTweet("this is a test");
             var news = new News();
             news.getNews();
             Console.ReadLine();
