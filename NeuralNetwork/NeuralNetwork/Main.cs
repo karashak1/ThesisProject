@@ -28,27 +28,22 @@ namespace NeuralNetwork {
             //while (twit.Data.Length <= 1) ;
             //Console.WriteLine(twit.Data+"\n");
 
+            testStream(ini);
+            //var news = new News();
+            //news.getNews();
+            Console.ReadLine();
+        }
+
+        public static async void testStream(string twitterFile) {
             JsonSerializer serializer = new JsonSerializer();
             serializer.NullValueHandling = NullValueHandling.Ignore;
-            
-            //var blah = JsonConvert.DeserializeObject<TwitterInfo>(ini);
+
             TwitterInfo LoginInfo;
-            using (StreamReader sr = new StreamReader(ini)) 
+            using (StreamReader sr = new StreamReader(twitterFile))
             using (JsonTextReader jr = new JsonTextReader(sr)) {
                 LoginInfo = serializer.Deserialize<TwitterInfo>(jr);
             }
-            /*
-            Console.WriteLine(blah.ConsumerKey);
-            var token = new Token(LoginInfo.AccessToken, LoginInfo.AccessTokenSecret, LoginInfo.ConsumerKey, LoginInfo.ConsumerSercert);
-            SimpleStream stream = new SimpleStream("https://stream.twitter.com/1.1/statuses/sample.json");
-            Console.WriteLine("stream state " + stream.StreamState);
-            stream.StartStream(token, x => { Console.WriteLine(x.Text); });
-            Console.WriteLine(stream.StreamState);
-            var client = new HttpClient {
-                BaseAddress = new Uri("https://stream.twitter.com/1.1/statuses/sample.json"),
-                DefaultRequestHeaders = { { "accept", "application/json"} }
-            };
-            */
+
 
             var auth = new SingleUserAuthorizer {
                 CredentialStore = new SingleUserInMemoryCredentialStore {
@@ -59,6 +54,7 @@ namespace NeuralNetwork {
                 }
             };
             var twitterCtx = new TwitterContext(auth);
+            /*
             var searchResponse =
                 (from search in twitterCtx.Search
                  where search.Type == SearchType.Search &&
@@ -72,9 +68,31 @@ namespace NeuralNetwork {
                     tweet.User.ScreenNameResponse,
                     tweet.Text,
                     tweet.Lang));
-            var news = new News();
-            news.getNews();
-            Console.ReadLine();
+             */
+            var count = 0;
+            Console.WriteLine("Testing streaming");
+            Tweet test;
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Kevin\Documents\tweets.txt", true)) {
+                
+
+                await (from strm in twitterCtx.Streaming
+                       where strm.Type == StreamingType.Sample
+                       select strm)
+                    .StartAsync(async strm => {
+                        //file.WriteLine(strm.Content + "\n");
+                        try{
+                            test = JsonConvert.DeserializeObject<Tweet>(strm.Content);
+                            if (test != null)
+                                if(test.text != null && (test.lang.Contains("en")))
+                                    Console.WriteLine(test.text +" " + test.lang);
+                            if (count++ >= 100)
+                                strm.CloseStream();
+                        }
+                        catch (JsonException) {
+
+                        }
+                    });
+            }
         }
     }
 }
