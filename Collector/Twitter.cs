@@ -3,26 +3,188 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http;
+using Newtonsoft.Json;
+using LinqToTwitter;
+using System.IO;
 
 namespace Collector {
     public class Twitter {
 
-        public string Data { get; set; }
+        private TwitterContext twitterCtx { get; set; }
 
-        public Twitter() {
-            Data = "";
+        private Tweets _Data;
+
+        public Tweets Data {
+            get { return _Data; }
+            private set { _Data = value; }
         }
 
-        public async void getData() {
-            var client = new HttpClient {
-                BaseAddress = new Uri("http://cs.newpaltz.edu/~plotkinm/2012Grad/Final/api/"),
-                DefaultRequestHeaders = { { "accept", "application/json" } }
+
+        public Twitter(string twitterFile) {
+            Data = new Tweets();
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.NullValueHandling = NullValueHandling.Ignore;
+
+            TwitterInfo LoginInfo;
+            using (StreamReader sr = new StreamReader(twitterFile))
+            using (JsonTextReader jr = new JsonTextReader(sr)) {
+                LoginInfo = serializer.Deserialize<TwitterInfo>(jr);
+            }
+
+
+            var auth = new SingleUserAuthorizer {
+                CredentialStore = new SingleUserInMemoryCredentialStore {
+                    ConsumerKey = LoginInfo.ConsumerKey,
+                    ConsumerSecret = LoginInfo.ConsumerSercert,
+                    OAuthToken = LoginInfo.AccessToken,
+                    OAuthTokenSecret = LoginInfo.AccessTokenSecret
+                }
             };
-
-            var temp = await client.GetStringAsync("Cities.php?");
-            Data = temp;
+            twitterCtx = new TwitterContext(auth);
         }
+
+        public async void getTestSet() {
+            
+        }
+
+        public async void populateData(int count) {
+            Tweet test;
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Kevin\Documents\tweets.txt", true)) {
+
+                await (from strm in twitterCtx.Streaming
+                       where strm.Type == StreamingType.Sample
+                       select strm)
+                    .StartAsync(async strm => {
+                        try {
+                            test = JsonConvert.DeserializeObject<Tweet>(strm.Content);
+                            if (test != null)
+                                if (test.text != null && (test.lang.Contains("en"))) {
+                                    _Data.add(new TweetData {
+                                        text = test.text,
+                                        created_at = test.created_at
+                                    });
+
+                                    Console.WriteLine(test.text + " " + test.lang);
+                                    count++;
+                                }
+                            if (count >= 1000)
+                                strm.CloseStream();
+                        }
+                        catch (JsonException) {
+
+                        }
+                    });
+            }
+        }
+
+        public async void testStream() {
+            var count = 0;
+            Console.WriteLine("Testing streaming");
+            Tweet test;
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Kevin\Documents\tweets.txt", true)) {
+
+                await (from strm in twitterCtx.Streaming
+                       where strm.Type == StreamingType.Sample
+                       select strm)
+                    .StartAsync(async strm => {
+                        try {
+                            test = JsonConvert.DeserializeObject<Tweet>(strm.Content);
+                            if (test != null)
+                                if (test.text != null && (test.lang.Contains("en"))) {
+                                    
+                                    
+                                    Console.WriteLine(test.text + " " + test.lang);
+                                    count++;
+                                }
+                            if (count >= 1000)
+                                strm.CloseStream();
+                        }
+                        catch (JsonException) {
+
+                        }
+                    });
+            }
+        }
+    
+        
+
+
+        public static async void testStream(string twitterFile) {
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.NullValueHandling = NullValueHandling.Ignore;
+
+            TwitterInfo LoginInfo;
+            using (StreamReader sr = new StreamReader(twitterFile))
+            using (JsonTextReader jr = new JsonTextReader(sr)) {
+                LoginInfo = serializer.Deserialize<TwitterInfo>(jr);
+            }
+
+
+            var auth = new SingleUserAuthorizer {
+                CredentialStore = new SingleUserInMemoryCredentialStore {
+                    ConsumerKey = LoginInfo.ConsumerKey,
+                    ConsumerSecret = LoginInfo.ConsumerSercert,
+                    OAuthToken = LoginInfo.AccessToken,
+                    OAuthTokenSecret = LoginInfo.AccessTokenSecret
+                }
+            };
+            var twitterCtx = new TwitterContext(auth);
+           
+            var count = 0;
+            Console.WriteLine("Testing streaming");
+            Tweet test;
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Kevin\Documents\tweets.txt", true)) {
+
+
+                await (from strm in twitterCtx.Streaming
+                       where strm.Type == StreamingType.Sample
+                       select strm)
+                    .StartAsync(async strm => {
+                        try {
+                            test = JsonConvert.DeserializeObject<Tweet>(strm.Content);
+                            if (test != null)
+                                if (test.text != null && (test.lang.Contains("en"))) {
+                                    
+
+                                    Console.WriteLine(test.text + " " + test.lang);
+
+                                    count++;
+                                }
+                            if (count >= 1000)
+                                strm.CloseStream();
+                        }
+                        catch (JsonException) {
+
+                        }
+                    });
+            }
+        }
+    }
+
+    public class Tweets : IEnumerable<TweetData> {
+        private List<TweetData> tweets;
+
+        public Tweets() {
+            tweets = new List<TweetData>();
+        }
+
+        public void add(TweetData tweet) {
+            tweets.Add(tweet);
+        }
+    
+        public IEnumerator<TweetData> GetEnumerator(){
+            return this.tweets.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator(){
+            return this.tweets.GetEnumerator();
+        }
+    }
+
+    public class TweetData {
+        public string text { get; set; }
+        public string created_at { get; set; }
+        public bool calmness { get; set; }
     }
 
 

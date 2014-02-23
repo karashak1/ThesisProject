@@ -38,18 +38,9 @@
     <Reference Include="LinqToTwitterPcl">
       <HintPath>..\packages\LinqToTwitter.3.0.2\lib\net45\LinqToTwitterPcl.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.Prism">
-      <HintPath>..\packages\TweetinviAPI.0.8.3.23\lib\Microsoft.Practices.Prism.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
-    <Reference Include="oAuthConnection">
-      <HintPath>..\packages\TweetinviAPI.0.8.3.23\lib\oAuthConnection.dll</HintPath>
-    </Reference>
-    <Reference Include="SearchEngine">
-      <HintPath>..\packages\TweetinviAPI.0.8.3.23\lib\SearchEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="Streaminvi">
-      <HintPath>..\packages\TweetinviAPI.0.8.3.23\lib\Streaminvi.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -66,21 +57,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Tools">
-      <HintPath>..\packages\TweetinviAPI.0.8.3.23\lib\Tools.dll</HintPath>
-    </Reference>
-    <Reference Include="TweetinCore">
-      <HintPath>..\packages\TweetinviAPI.0.8.3.23\lib\TweetinCore.dll</HintPath>
-    </Reference>
-    <Reference Include="Tweetinvi">
-      <HintPath>..\packages\TweetinviAPI.0.8.3.23\lib\Tweetinvi.dll</HintPath>
-    </Reference>
-    <Reference Include="TwitterToken">
-      <HintPath>..\packages\TweetinviAPI.0.8.3.23\lib\TwitterToken.dll</HintPath>
-    </Reference>
-    <Reference Include="UILibrary">
-      <HintPath>..\packages\TweetinviAPI.0.8.3.23\lib\UILibrary.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
