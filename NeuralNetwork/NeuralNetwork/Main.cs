@@ -20,23 +20,26 @@ namespace NeuralNetwork {
                 ini = args[0];
             Console.WriteLine(ini);
             var twit = new Twitter(ini);
-            twit.testStream();
-            //twit.populateData(1000);
+            //twit.testStream();
+            var testCount = 100;
+            //twit.populateData(testCount);
             /*
-            while (twit.Data.Count() < 999) {
+            while (twit.Data.Count() < testCount - 1) {
                 Console.WriteLine(twit.Data.Count());
                 System.Threading.Thread.Sleep(5000);
             }
-             */
+            */
+            twit.testStream("Disney");
             Console.WriteLine("done");
+
             //twit.getData();
             //while (twit.Data.Length <= 1) ;
             //Console.WriteLine(twit.Data+"\n");
 
             //Twitter.testStream(ini);
             var news = new News();
-            var results = news.getNews("Disney");
-            foreach (var article in results) {
+            news.getGoogleNews("Disney");
+            foreach (var article in news.Data) {
                 Console.WriteLine(article.Title+" "+article.publishData.ToString() );
             }
             Console.ReadLine();

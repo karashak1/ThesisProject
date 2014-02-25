@@ -10,12 +10,20 @@ namespace Collector
 {
     public class News
     {
-        public News() {
 
+        private Articles _Data;
+
+        public Articles Data {
+            get { return _Data; }
+            private set { _Data = value; }
+        }
+        
+        public News() {
+            Data = new Articles();
         }
 
-        public Articles getNews(string topic) {
-            var articles = new Articles();
+
+        public void getGoogleNews(string topic) {
             var url = "http://news.google.com?q="+topic+"&output=rss";
             var reader = XmlReader.Create(url);
             var feed = SyndicationFeed.Load(reader);
@@ -30,9 +38,8 @@ namespace Collector
                         if (part.Contains("url=http"))
                             article.URL = part.Split('=')[1];
                 }
-                articles.add(article);
+                Data.add(article);
             }
-            return articles;
         }
     }
 
