@@ -52,9 +52,12 @@ namespace Collector {
 
                 using (StreamWriter file = new System.IO.StreamWriter(fileName)) 
                 using (JsonTextWriter jw = new JsonTextWriter(file)){
-                    foreach (var article in Data) {
-                        serializer.Serialize(jw, article);
+                    jw.WriteStartArray();
+                    foreach (var tweet in Data) {
+                        serializer.Serialize(jw, tweet);
                     }
+                    jw.WriteEnd();
+                    jw.Flush();
                 }
                 return true;
             }
