@@ -207,6 +207,7 @@ namespace Collector {
         public string text { get; set; }
         public string created_at { get; set; }
         public bool calmness { get; set; }
+        public bool change { get; set; } //true for increase false for decrease 
     }
 
 
