@@ -96,6 +96,35 @@ namespace Collector {
             
         }
 
+        public async void populateData(string topic, int maxTweets) {
+            Tweet test;
+            var count = 0;
+
+            await (from strm in twitterCtx.Streaming
+                   where strm.Type == StreamingType.Filter &&
+                         strm.Track == topic
+                   select strm)
+                .StartAsync(async strm => {
+                    try {
+                        test = JsonConvert.DeserializeObject<Tweet>(strm.Content);
+                        if (test != null)
+                            if (test.text != null && (test.lang.Contains("en"))) {
+                                _Data.add(new TweetData {
+                                    text = test.text,
+                                    created_at = test.created_at
+                                });
+                                count++;
+                            }
+                        if (count >= maxTweets)
+                            strm.CloseStream();
+                    }
+                    catch (JsonException) {
+
+                    }
+                });
+
+        }
+
         public async void testStream(string topic, int maxTweets) {
             var count = 0;
             Tweet test;

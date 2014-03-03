@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.ServiceModel.Syndication;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Collector
 {
@@ -22,6 +25,27 @@ namespace Collector
             Data = new Articles();
         }
 
+        public bool writeDateToFile(string fileName) {
+            if (Data.Count() > 0) {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Converters.Add(new JavaScriptDateTimeConverter());
+                serializer.NullValueHandling = NullValueHandling.Ignore;
+
+                using (StreamWriter file = new System.IO.StreamWriter(fileName))
+                using (JsonTextWriter jw = new JsonTextWriter(file)) {
+                    jw.WriteStartArray();
+                    foreach (var article in Data) {
+                        serializer.Serialize(jw, article);
+                    }
+                    jw.WriteEnd();
+                    jw.Flush();
+                }
+                _Data.clear();
+                return true;
+            }
+            else
+                return false;
+        }
 
         public void getGoogleNews(string topic) {
             var url = "http://news.google.com?q="+topic+"&output=rss";
@@ -52,6 +76,10 @@ namespace Collector
 
         public void add(Article article) {
             this.articles.Add(article);
+        }
+
+        public void clear() {
+            this.articles.Clear();
         }
 
         public IEnumerator<Article> GetEnumerator() {
