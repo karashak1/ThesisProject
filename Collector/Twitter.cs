@@ -50,8 +50,10 @@ namespace Collector {
                     serializer.Converters.Add(new JavaScriptDateTimeConverter());
                     serializer.NullValueHandling = NullValueHandling.Ignore;
 
-                using (StreamWriter file = new System.IO.StreamWriter(fileName)) 
+                using (FileStream fs = File.Open(fileName, FileMode.CreateNew))
+                using (StreamWriter file = new System.IO.StreamWriter(fs)) 
                 using (JsonTextWriter jw = new JsonTextWriter(file)){
+                    Console.WriteLine(fs.Name.ToString());
                     jw.WriteStartArray();
                     foreach (var tweet in Data) {
                         serializer.Serialize(jw, tweet);
@@ -59,6 +61,7 @@ namespace Collector {
                     jw.WriteEnd();
                     jw.Flush();
                 }
+                _Data.clear();
                 return true;
             }
             else
@@ -221,6 +224,10 @@ namespace Collector {
 
         public void add(TweetData tweet) {
             tweets.Add(tweet);
+        }
+
+        public void clear() {
+            this.tweets.Clear();
         }
     
         public IEnumerator<TweetData> GetEnumerator(){

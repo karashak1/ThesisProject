@@ -15,32 +15,29 @@ namespace DataCollection {
             var options = new Options();
             var result = CommandLine.Parser.Default.ParseArguments(args, options);
             
-            Console.WriteLine(options.ini);
-            Console.WriteLine(options.twitterStore);
-            Console.WriteLine(options.newsStore);
-            Console.WriteLine(options.tweetCount);
-            foreach (var x in options.terms) {
-                Console.WriteLine(x);
-            }
             var twit = new Twitter(options.ini);
+            Console.WriteLine("Connected to twiiter");
             var news = new News();
             string date = DateTime.Now.ToString("M-d-yyyy");
             if (!Directory.Exists(options.twitterStore + date)) {
                 Directory.CreateDirectory(options.twitterStore + date);
             }
-            string time = DateTime.Now.ToString("HH-mm-ss");
+            //TODO do the same for the news articles
+            string time = DateTime.Now.ToString("HHmmss");
             foreach (var x in options.terms) {
-                string path = options.twitterStore+date;
-                string fileName = time+"-"+x+".json";
+                string path = options.twitterStore +date;
+                string fileName = time+"-"+x+".txt";
                 string file = Path.Combine(path, fileName);
-                //Console.WriteLine(file);
                 twit.populateData(x, options.tweetCount);
                 while (twit.Data.Count() < options.tweetCount - 1) {
                     System.Threading.Thread.Sleep(5000);
                     Console.WriteLine("Topic:"+x +" count="+twit.Data.Count());
                 }
-                twit.writeDateToFile(fileName);
+                Console.WriteLine("Collection for " + x + " done, writing to file.");
+                twit.writeDateToFile(file);
+                Console.WriteLine("Writing file done");
             }
+            Console.WriteLine("Collection Done");
             Console.ReadLine();
             
             
