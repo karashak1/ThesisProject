@@ -22,6 +22,9 @@ namespace DataCollection {
             if (!Directory.Exists(options.twitterStore + date)) {
                 Directory.CreateDirectory(options.twitterStore + date);
             }
+            if (!Directory.Exists(options.newsStore + date)) {
+                Directory.CreateDirectory(options.newsStore + date);
+            }
             //TODO do the same for the news articles
             string time = DateTime.Now.ToString("HHmmss");
             foreach (var x in options.terms) {
@@ -36,6 +39,20 @@ namespace DataCollection {
                 Console.WriteLine("Collection for " + x + " done, writing to file.");
                 twit.writeDateToFile(file);
                 Console.WriteLine("Writing file done");
+            }
+            Console.WriteLine("collecting generic data");
+            twit.populateData(1000);
+            while (twit.Data.Count() < 1000 - 1) {
+                System.Threading.Thread.Sleep(5000);
+                Console.WriteLine("Count=" + twit.Data.Count());
+            }
+            twit.writeDateToFile(Path.Combine(options.twitterStore+date, time+".txt"));
+            foreach (var x in options.terms) {
+                string path = options.newsStore + date;
+                string fileName = time + "-" + x + ".txt";
+                string file = Path.Combine(path, fileName);
+                news.getGoogleNews(x);
+                news.writeDateToFile(file);
             }
             Console.WriteLine("Collection Done");
             Console.ReadLine();
