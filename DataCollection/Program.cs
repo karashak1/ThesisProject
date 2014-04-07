@@ -16,7 +16,7 @@ namespace DataCollection {
             var result = CommandLine.Parser.Default.ParseArguments(args, options);
             
             var twit = new Twitter(options.ini);
-            Console.WriteLine("Connected to twiiter");
+            Console.WriteLine("Connected to twitter");
             var news = new News();
             string date = DateTime.Now.ToString("M-d-yyyy");
             if (!Directory.Exists(options.twitterStore + date)) {
