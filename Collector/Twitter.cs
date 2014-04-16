@@ -78,7 +78,11 @@ namespace Collector {
                    select strm)
                 .StartAsync(async strm => {
                       try {
-                        test = JsonConvert.DeserializeObject<Tweet>(strm.Content);
+                          if (strm.Content != null) {
+                              test = JsonConvert.DeserializeObject<Tweet>(strm.Content);
+                          }
+                          else
+                              test = null;
                         if (test != null)
                             if (test.text != null && (test.lang.Contains("en"))) {
                                 _Data.add(new TweetData {

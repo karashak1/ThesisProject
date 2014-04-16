@@ -26,7 +26,9 @@ namespace DataCollection {
                 Directory.CreateDirectory(options.newsStore + date);
             }
             //TODO do the same for the news articles
+            
             string time = DateTime.Now.ToString("HHmmss");
+            
             foreach (var x in options.terms) {
                 string path = options.twitterStore +date;
                 string fileName = time+"-"+x+".txt";
@@ -40,6 +42,7 @@ namespace DataCollection {
                 twit.writeDateToFile(file);
                 Console.WriteLine("Writing file done");
             }
+            
             Console.WriteLine("collecting generic data");
             twit.populateData(1000);
             while (twit.Data.Count() < 1000 - 1) {

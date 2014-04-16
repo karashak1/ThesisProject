@@ -9,8 +9,11 @@ namespace NeuralNetwork {
     class NetworkLayer {
         public Neuron[] layer { get; private set; }
 
-        public NetworkLayer(int neuronCount){
+        public NetworkLayer(int inputSize, int neuronCount){
             layer = new Neuron[neuronCount];
+            Random ran = new Random();
+            for (int x = 0; x < layer.Length; x++)
+                layer[x] = new Neuron(inputSize+1, ran);
         }
 
         public double[] calculateOutput(double[] input) {
@@ -30,15 +33,18 @@ namespace NeuralNetwork {
 
     class Neuron {
 
-        public Neuron(int size) {
-            weights = new double[size + 1];
+        public Neuron(int size, Random ran) {
+            weights = new double[size];
+            for (int x = 0; x < weights.Length; x++)
+                weights[x] = ran.NextDouble();
         }
 
         public double calculateOutput(double[] input) {
             double output = 0;
-            for (int x = 0; x < weights.Length; x++) {
+            for (int x = 0; x < weights.Length-1; x++) {
                 output += weights[x] * input[x];
             }
+            output += (-weights[weights.Length-1]) * input[input.Length-1];
             return output;
         }
 
@@ -46,14 +52,14 @@ namespace NeuralNetwork {
     }
 
     class ANNetwork {
-        public IList<NetworkLayer> layers { get; private set; }
-
-        private NetworkLayer input { get; private set; }
-
-        private NetworkLayer output { get; private set; }
+        public List<NetworkLayer> layers { get; private set; }
+        public NetworkLayer input { get; private set; }
+        public NetworkLayer output { get; private set; }
+        
 
         public ANNetwork() {
-
+            layers = new List<NetworkLayer>();
+            input = output = null;
         }
 
         public void addLayer(NetworkLayer layer) {
